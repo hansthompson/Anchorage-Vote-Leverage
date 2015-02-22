@@ -138,16 +138,6 @@ voting_results <- voting_results %>%
 
 #Find difference in votes between yes and no
 
-input <- list(House_Can = "Young", Gov_Can = "Walker",
-              HouseQuantile = .75, 
-              GovQuantile = 0.6,
-              Prop1Quantile = .3,
-              Prop2Quantile = .5,
-              Prop3Quantile = .5,
-              Prop4Quantile = .2)
-
-
-
 Yes_Votes <- voting_results %>%
   unique() %>%
   filter(Race %in% c("Ballot Measure 2 - 13PSUM", "Ballot Measure 3 - 13MINW", "Ballot Measure 4 - 12BBAY", "MOA Proposition #1")) %>%
@@ -187,6 +177,18 @@ House_Votes <- spread(House_Votes, Value, Difference)
 colnames(House_Votes) <- c("District", "Dunbar", "McDermott", "Write-in 50", "Young")
 House_Votes <- House_Votes[,-4]
 
+Senate_Votes <- voting_results %>%
+  unique() %>%
+  filter(Race %in% c("UNITED STATES SENATOR")) %>%
+  filter(! Value == "Registered Voters") %>%
+  group_by(DISTRICT) %>%
+  mutate(Difference = (n - (sum(n)) + n)) %>%
+  select(DISTRICT, Value, Difference) %>%
+  as.data.frame()
+Senate_Votes <- spread(Senate_Votes, Value, Difference) 
+colnames(Senate_Votes) <- c("District", "Begich", "Fish", "Gianoutsos", "Sullivan", "Write-in")
+Senate_Votes <- Senate_Votes[,-6]
+
 
 #hist(House_Votes[,5])
 n_Votes <- voting_results %>%
@@ -199,7 +201,7 @@ n_Votes <- voting_results %>%
   unique() %>%
   select(-DISTRICT)
 
-app_data <- cbind(House_Votes, n_Votes, Gov_Votes, Yes_Votes)
+app_data <- cbind(House_Votes, n_Votes, Gov_Votes, Senate_Votes, Yes_Votes)
 app_data <- app_data[!duplicated(lapply(app_data, summary))]
 
 
