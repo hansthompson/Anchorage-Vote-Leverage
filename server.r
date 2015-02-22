@@ -4,7 +4,7 @@ library(shiny)
 library(ggplot2)
 load("app_data.rda")
 
-#input <- list(House_Can = "Young", Gov_Can = "Walker", HouseQuantile = .75, GovQuantile = 0.6, Prop1Quantile = .3, Prop2Quantile = .5, Prop3Quantile = .5, Prop4Quantile = .2)
+input <- list(House_Can = "Young", Gov_Can = "Walker", Senate_Can = "Sullivan",SenateQuantile = 0.5, HouseQuantile = .75, GovQuantile = 0.6, Prop1Quantile = .3, Prop2Quantile = .5, Prop3Quantile = .5, Prop4Quantile = .2)
 shinyServer(function(input, output, session) {
   
 reactive_plot <- reactive({
@@ -63,9 +63,14 @@ df <- data.frame(District = app_data$District,
            vote_distance,
            Total_Votes = app_data$Total_Votes)
 
+if(input$leverage != TRUE) { df$vote_distance <- (df$vote_distance/6)/df$Total_Votes}
+df$District <- factor(df$District, levels = as.character(df$District[order(-df$vote_distance)]))
+
+
 
 plot_list <- list()
-plot_list$hist <- ggplot(data = df, aes( x = (vote_distance/6)/ Total_Votes, y = District)) + geom_bar()
+plot_list$hist <- ggplot(data = df, aes(y = vote_distance/6, x = District)) + geom_bar(stat = "identity", position = "dodge") +
+  coord_flip()
 
 
 plot_list
