@@ -65,7 +65,7 @@ df <- data.frame(District = app_data$District,
 
 
 plot_list <- list()
-plot_list$hist <- ggplot(data = df, aes( x = (vote_distance/6)/ Total_Votes, label = District)) + geom_bar()
+plot_list$hist <- ggplot(data = df, aes( x = (vote_distance/6)/ Total_Votes, y = District)) + geom_bar()
 
 
 plot_list
